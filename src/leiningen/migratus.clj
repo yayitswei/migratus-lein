@@ -13,7 +13,12 @@
 ;;;; under the License.
 (ns leiningen.migratus
   (:require [migratus.core :as core]
+            [config.core]
+            [config.core :refer [env]]
             [leiningen.core.eval :as eval]))
+
+(def default-config {:store :database
+                     :migration-dir "migrations"})
 
 (defn migratus
   "Maintain database migrations.
@@ -36,9 +41,9 @@ pending  Return a list of pending migrations.
 If you run `lein migratus` without specifying a command, then the 'migrate'
 command will be executed."
   [project & [command & args]]
-  (if-let [config (-> (:migratus project)
-                      (update-in [:db]
-                                 #(or % (-> project :env :database-url))))]
+  (if-let [config (assoc default-config :db
+                         (:db (config.core/read-config-file "resources/config.edn"))
+                         (:db (config.core/read-config-file "config.edn")))]
     (case command
       "up"
       (do
@@ -81,6 +86,7 @@ command will be executed."
 
       (if (and (or (= command "migrate") (nil? command)) (empty? args))
         (do
+          (println "CONFIG: " config)
           (println "migrating all outstanding migrations")
           (eval/eval-in-project project `(core/migrate ~config) '(require 'migratus.core)))
         (println "Unexpected arguments to 'migrate'")))
