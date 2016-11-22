@@ -1,4 +1,4 @@
-(defproject yayitswei/migratus-lein "0.4.6"
+(defproject yayitswei/migratus-lein "0.4.7-SNAPSHOT"
   :description "Maintain database migrations."
   :url "http://github.com/pjstadig/migratus-lein"
   :license {:name "Apache License, Version 2.0"
