@@ -41,9 +41,11 @@ pending  Return a list of pending migrations.
 If you run `lein migratus` without specifying a command, then the 'migrate'
 command will be executed."
   [project & [command & args]]
+  (println "resources/config.edn: " (:db (config.core/read-config-file "resources/config.edn")))
+  (println "config.edn: " (:db (config.core/read-config-file "config.edn")))
   (if-let [config (assoc default-config :db
-                         (:db (config.core/read-config-file "resources/config.edn"))
-                         (:db (config.core/read-config-file "config.edn")))]
+                         (or (:db (config.core/read-config-file "resources/config.edn"))
+                             (:db (config.core/read-config-file "config.edn"))))]
     (case command
       "up"
       (do
